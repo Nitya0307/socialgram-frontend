@@ -3,9 +3,57 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import axios from "axios";
 
 export default function Signup() {
+
   const [showPw, setShowPw] = useState(false);
+
+  const [formData, setFormData] = useState({
+    username: "",
+    mobile: "",
+    email: "",
+    password: "",
+  });
+
+  // HANDLE INPUTS
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  // SIGNUP FUNCTION
+  const handleSignup = async () => {
+
+    try {
+
+      const response = await axios.post(
+        "http://localhost:5000/auth/signup",
+        formData
+      );
+
+      alert(response.data.message);
+
+      console.log(response.data);
+
+      // SAVE TOKEN
+      localStorage.setItem(
+        "token",
+        response.data.token
+      );
+
+    } catch (error) {
+
+      console.log(error);
+
+      alert(
+        error.response?.data?.message ||
+        "Signup failed"
+      );
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#050816] text-white overflow-hidden">
@@ -99,6 +147,8 @@ export default function Signup() {
               <div className="mb-4">
                 <input
                   type="text"
+                  name="username"
+                  onChange={handleChange}
                   placeholder="Username"
                   className="w-full px-5 py-4 rounded-2xl bg-white/[0.03] border border-white/10 outline-none focus:border-indigo-500 text-base"
                 />
@@ -108,6 +158,8 @@ export default function Signup() {
               <div className="mb-4">
                 <input
                   type="tel"
+                  name="mobile"
+                  onChange={handleChange}
                   placeholder="Phone number"
                   className="w-full px-5 py-4 rounded-2xl bg-white/[0.03] border border-white/10 outline-none focus:border-indigo-500 text-base"
                 />
@@ -117,6 +169,8 @@ export default function Signup() {
               <div className="mb-4">
                 <input
                   type="email"
+                  name="email"
+                  onChange={handleChange}
                   placeholder="Email address"
                   className="w-full px-5 py-4 rounded-2xl bg-white/[0.03] border border-white/10 outline-none focus:border-indigo-500 text-base"
                 />
@@ -126,11 +180,14 @@ export default function Signup() {
               <div className="relative mb-6">
                 <input
                   type={showPw ? "text" : "password"}
+                  name="password"
+                  onChange={handleChange}
                   placeholder="Password"
                   className="w-full px-5 py-4 rounded-2xl bg-white/[0.03] border border-white/10 outline-none focus:border-indigo-500 text-base"
                 />
 
                 <button
+                  type="button"
                   onClick={() => setShowPw(!showPw)}
                   className="absolute right-5 top-1/2 -translate-y-1/2 text-zinc-500"
                 >
@@ -139,7 +196,10 @@ export default function Signup() {
               </div>
 
               {/* BUTTON */}
-              <button className="w-full py-4 rounded-2xl font-semibold text-lg bg-gradient-to-r from-indigo-500 to-violet-500 hover:opacity-90 transition shadow-lg shadow-indigo-500/20">
+              <button
+                onClick={handleSignup}
+                className="w-full py-4 rounded-2xl font-semibold text-lg bg-gradient-to-r from-indigo-500 to-violet-500 hover:opacity-90 transition shadow-lg shadow-indigo-500/20"
+              >
                 Create account
               </button>
 
@@ -173,6 +233,7 @@ export default function Signup() {
                   Sign in
                 </Link>
               </p>
+
             </div>
           </motion.div>
         </div>

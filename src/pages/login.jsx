@@ -3,9 +3,61 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import axios from "axios";
 
 export default function Login() {
+
   const [showPw, setShowPw] = useState(false);
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  // HANDLE INPUTS
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  // LOGIN FUNCTION
+  const handleLogin = async () => {
+
+    try {
+
+      const response = await axios.post(
+        "http://localhost:5000/auth/login",
+        formData
+      );
+
+      alert(response.data.message);
+
+      console.log(response.data);
+
+      // SAVE TOKEN
+      localStorage.setItem(
+        "token",
+        response.data.token
+      );
+
+      // SAVE USER
+      localStorage.setItem(
+        "user",
+        JSON.stringify(response.data.user)
+      );
+
+    } catch (error) {
+
+      console.log(error);
+
+      alert(
+        error.response?.data?.message ||
+        "Login failed"
+      );
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#050816] text-white overflow-hidden">
@@ -100,6 +152,8 @@ export default function Login() {
               <div className="mb-5">
                 <input
                   type="email"
+                  name="email"
+                  onChange={handleChange}
                   placeholder="Email, username or phone number"
                   className="w-full px-5 py-4 rounded-2xl bg-white/[0.03] border border-white/10 outline-none focus:border-violet-500 text-lg"
                 />
@@ -109,11 +163,14 @@ export default function Login() {
               <div className="relative mb-3">
                 <input
                   type={showPw ? "text" : "password"}
+                  name="password"
+                  onChange={handleChange}
                   placeholder="Password"
                   className="w-full px-5 py-4 rounded-2xl bg-white/[0.03] border border-white/10 outline-none focus:border-violet-500 text-lg"
                 />
 
                 <button
+                  type="button"
                   onClick={() => setShowPw(!showPw)}
                   className="absolute right-5 top-1/2 -translate-y-1/2 text-zinc-500"
                 >
@@ -129,7 +186,10 @@ export default function Login() {
               </div>
 
               {/* BUTTON */}
-              <button className="w-full py-4 rounded-2xl font-semibold text-lg bg-gradient-to-r from-violet-500 to-indigo-500 hover:opacity-90 transition shadow-lg shadow-violet-500/20">
+              <button
+                onClick={handleLogin}
+                className="w-full py-4 rounded-2xl font-semibold text-lg bg-gradient-to-r from-violet-500 to-indigo-500 hover:opacity-90 transition shadow-lg shadow-violet-500/20"
+              >
                 Sign in
               </button>
 
@@ -158,6 +218,7 @@ export default function Login() {
                   Create account
                 </Link>
               </p>
+
             </div>
           </motion.div>
         </div>
