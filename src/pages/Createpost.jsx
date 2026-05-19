@@ -2,8 +2,12 @@ import { useState } from "react";
 import { Image, Globe, X } from "lucide-react";
 
 export default function Createpost() {
+
   const [caption, setCaption] = useState("");
   const [previews, setPreviews] = useState([]);
+
+  // GET LOGGED IN USER
+  const user = JSON.parse(localStorage.getItem("user"));
 
   // HANDLE MULTIPLE IMAGE UPLOAD
   const handleImageChange = (e) => {
@@ -63,12 +67,12 @@ export default function Createpost() {
 
               {/* AVATAR */}
               <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-500 flex items-center justify-center text-xl font-bold">
-                L
+                {user?.username?.charAt(0).toUpperCase()}
               </div>
 
               <div>
                 <h3 className="font-semibold text-lg">
-                  Leona Mendes
+                  {user?.username}
                 </h3>
 
                 <div className="flex items-center gap-2 text-sm text-zinc-500 mt-1">

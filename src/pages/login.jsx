@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { motion } from "framer-motion";
@@ -7,10 +7,13 @@ import axios from "axios";
 
 export default function Login() {
 
+  const navigate = useNavigate();
+
   const [showPw, setShowPw] = useState(false);
 
+  // UPDATED FORM DATA
   const [formData, setFormData] = useState({
-    email: "",
+    identifier: "",
     password: "",
   });
 
@@ -47,6 +50,9 @@ export default function Login() {
         "user",
         JSON.stringify(response.data.user)
       );
+
+      // REDIRECT
+      navigate("/create-post");
 
     } catch (error) {
 
@@ -148,11 +154,11 @@ export default function Login() {
                 Sign in to continue to Socialgram
               </p>
 
-              {/* EMAIL */}
+              {/* EMAIL / USERNAME / PHONE */}
               <div className="mb-5">
                 <input
-                  type="email"
-                  name="email"
+                  type="text"
+                  name="identifier"
                   onChange={handleChange}
                   placeholder="Email, username or phone number"
                   className="w-full px-5 py-4 rounded-2xl bg-white/[0.03] border border-white/10 outline-none focus:border-violet-500 text-lg"
