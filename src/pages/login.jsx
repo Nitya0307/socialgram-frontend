@@ -31,9 +31,9 @@ export default function Login() {
     try {
 
       const response = await axios.post(
-        "http://localhost:5000/auth/login",
-        formData
-      );
+  `${import.meta.env.VITE_API_URL}/auth/login`,
+  formData
+);
 
       alert(response.data.message);
 
