@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Image, Globe, X } from "lucide-react";
+import axios from "axios";
 
 export default function Createpost() {
 
@@ -11,6 +12,7 @@ export default function Createpost() {
 
   // HANDLE MULTIPLE IMAGE UPLOAD
   const handleImageChange = (e) => {
+
     const files = Array.from(e.target.files);
 
     const imageUrls = files.map((file) =>
@@ -23,6 +25,39 @@ export default function Createpost() {
   // REMOVE IMAGE
   const removeImage = (index) => {
     setPreviews(previews.filter((_, i) => i !== index));
+  };
+
+  // PUBLISH POST
+  const handlePublish = async () => {
+
+    try {
+
+      const response = await axios.post(
+        "http://localhost:5000/posts/create",
+        {
+          user_id: user.id,
+          description: caption,
+          media_url: previews[0] || "",
+        }
+      );
+
+      alert(response.data.message);
+
+      console.log(response.data);
+
+      // CLEAR FORM
+      setCaption("");
+      setPreviews([]);
+
+    } catch (error) {
+
+      console.log(error);
+
+      alert(
+        error.response?.data?.message ||
+        "Post failed"
+      );
+    }
   };
 
   return (
@@ -150,6 +185,7 @@ export default function Createpost() {
 
               {/* POST BUTTON */}
               <button
+                onClick={handlePublish}
                 disabled={!caption.trim() && previews.length === 0}
                 className={`px-8 py-4 rounded-2xl font-semibold text-lg transition-all
                   ${
