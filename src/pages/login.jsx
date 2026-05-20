@@ -53,6 +53,7 @@ export default function Login() {
 
       // REDIRECT
       navigate("/create-post");
+      
 
     } catch (error) {
 
