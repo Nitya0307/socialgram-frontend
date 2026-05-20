@@ -30,7 +30,7 @@ export default function Signup() {
     try {
 
       const response = await axios.post(
-  `${import.meta.env.VITE_API_URL}/auth/signup`,
+  "http://localhost:5000/auth/signup",
   formData
 );
 
