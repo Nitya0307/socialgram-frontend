@@ -1,8 +1,12 @@
 import { useState } from "react";
 import { Image, Globe, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { supabase } from "../supabase";
 
 export default function Createpost() {
+
+  const navigate = useNavigate();
 
   const [caption, setCaption] = useState("");
   const [previews, setPreviews] = useState([]);
@@ -15,11 +19,7 @@ export default function Createpost() {
 
     const files = Array.from(e.target.files);
 
-    const imageUrls = files.map((file) =>
-      URL.createObjectURL(file)
-    );
-
-    setPreviews((prev) => [...prev, ...imageUrls]);
+    setPreviews((prev) => [...prev, ...files]);
   };
 
   // REMOVE IMAGE
@@ -32,12 +32,49 @@ export default function Createpost() {
 
     try {
 
+      let imageUrl = "";
+
+      // UPLOAD FIRST IMAGE
+      if (previews.length > 0) {
+
+        const file = previews[0];
+
+        const fileName =
+          `${Date.now()}-${file.name}`;
+
+        // UPLOAD TO SUPABASE STORAGE
+        const { error: uploadError } =
+          await supabase.storage
+            .from("posts")
+            .upload(fileName, file);
+
+        if (uploadError) {
+
+          console.log(uploadError);
+
+          alert("Image upload failed");
+
+          return;
+        }
+
+        // GET PUBLIC URL
+        const {
+          data: publicUrlData,
+        } = supabase.storage
+          .from("posts")
+          .getPublicUrl(fileName);
+
+        imageUrl =
+          publicUrlData.publicUrl;
+      }
+
+      // SAVE POST
       const response = await axios.post(
         "http://localhost:5000/posts/create",
         {
           user_id: user.id,
           description: caption,
-          media_url: previews[0] || "",
+          media_url: imageUrl,
         }
       );
 
@@ -48,6 +85,9 @@ export default function Createpost() {
       // CLEAR FORM
       setCaption("");
       setPreviews([]);
+
+      // GO TO HOME PAGE
+      navigate("/home");
 
     } catch (error) {
 
@@ -127,7 +167,7 @@ export default function Createpost() {
                     className="relative"
                   >
                     <img
-                      src={img}
+                      src={URL.createObjectURL(img)}
                       alt="preview"
                       className="w-full h-[240px] object-cover rounded-3xl border border-white/10"
                     />
