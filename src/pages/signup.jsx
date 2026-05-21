@@ -4,6 +4,7 @@ import { FcGoogle } from "react-icons/fc";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import axios from "axios";
+import { supabase } from "../supabase";
 
 export default function Signup() {
 
@@ -30,9 +31,9 @@ export default function Signup() {
     try {
 
       const response = await axios.post(
-  "http://localhost:5000/auth/signup",
-  formData
-);
+        "http://localhost:5000/auth/signup",
+        formData
+      );
 
       alert(response.data.message);
 
@@ -52,6 +53,23 @@ export default function Signup() {
         error.response?.data?.message ||
         "Signup failed"
       );
+    }
+  };
+
+  // GOOGLE SIGNUP
+  const handleGoogleSignup = async () => {
+
+    const { error } =
+      await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: "http://localhost:5173/home",
+        },
+      });
+
+    if (error) {
+      console.log(error);
+      alert("Google signup failed");
     }
   };
 
@@ -213,7 +231,10 @@ export default function Signup() {
               </div>
 
               {/* GOOGLE */}
-              <button className="w-full py-4 rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.04] transition flex items-center justify-center gap-3 text-base">
+              <button
+                onClick={handleGoogleSignup}
+                className="w-full py-4 rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.04] transition flex items-center justify-center gap-3 text-base"
+              >
                 <FcGoogle size={22} />
                 Google
               </button>

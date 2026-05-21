@@ -9,7 +9,7 @@ import {
   Plus,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
+import { supabase } from "../supabase";
 export default function Home() {
 
   const [posts, setPosts] = useState([]);
@@ -17,10 +17,15 @@ export default function Home() {
 
   const navigate = useNavigate();
 
-  // LOGGED IN USER
-  const user = JSON.parse(
-    localStorage.getItem("user")
-  );
+  // SAFE USER FETCH
+  const localUser = localStorage.getItem("user");
+
+  const user = localUser
+    ? JSON.parse(localUser)
+    : {
+        id: "google-user",
+        username: "Google User",
+      };
 
   // FETCH POSTS
   const fetchPosts = async () => {
@@ -114,12 +119,19 @@ export default function Home() {
   };
 
   // LOGOUT
-  const handleLogout = () => {
+  const handleLogout = async () => {
 
-    localStorage.removeItem("user");
+  // REMOVE LOCAL USER
+  localStorage.removeItem("user");
 
-    navigate("/");
-  };
+  localStorage.removeItem("token");
+
+  // SIGN OUT FROM SUPABASE
+  await supabase.auth.signOut();
+
+  // REDIRECT
+  navigate("/");
+};
 
   return (
     <div className="min-h-screen bg-[#050816] text-white py-10 px-6">

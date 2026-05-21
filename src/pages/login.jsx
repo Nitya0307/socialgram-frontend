@@ -2,8 +2,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
+import { supabase } from "../supabase";
 
 export default function Login() {
 
@@ -16,6 +17,67 @@ export default function Login() {
     identifier: "",
     password: "",
   });
+
+  // HANDLE GOOGLE SESSION
+  useEffect(() => {
+
+  const syncGoogleUser = async () => {
+
+    const {
+      data: { user: googleUser },
+    } = await supabase.auth.getUser();
+
+    // NO GOOGLE USER
+    if (!googleUser) return;
+
+    try {
+
+      // CHECK EXISTING USER
+      const response = await axios.get(
+        `http://localhost:5000/auth/google-user?email=${googleUser.email}`
+      );
+
+      let existingUser = response.data.user;
+
+      // CREATE USER IF NOT EXISTS
+      if (!existingUser) {
+
+        const createResponse = await axios.post(
+          "http://localhost:5000/auth/google-signup",
+          {
+            username:
+              googleUser.user_metadata.full_name ||
+              googleUser.email,
+
+            email: googleUser.email,
+
+            mobile: "",
+
+            profile_pic:
+              googleUser.user_metadata.avatar_url || "",
+          }
+        );
+
+        existingUser = createResponse.data.user;
+      }
+
+      // SAVE NORMAL DATABASE USER
+      localStorage.setItem(
+        "user",
+        JSON.stringify(existingUser)
+      );
+
+      navigate("/home");
+
+    } catch (error) {
+
+      console.log(error);
+    }
+  };
+
+  syncGoogleUser();
+
+}, [navigate]);
 
   // HANDLE INPUTS
   const handleChange = (e) => {
@@ -30,10 +92,11 @@ export default function Login() {
 
     try {
 
-    const response = await axios.post(
-  "http://localhost:5000/auth/login",
-  formData
-);
+      const response = await axios.post(
+        "http://localhost:5000/auth/login",
+        formData
+      );
+
       alert(response.data.message);
 
       console.log(response.data);
@@ -52,7 +115,6 @@ export default function Login() {
 
       // REDIRECT
       navigate("/home");
-      
 
     } catch (error) {
 
@@ -62,6 +124,23 @@ export default function Login() {
         error.response?.data?.message ||
         "Login failed"
       );
+    }
+  };
+
+  // GOOGLE LOGIN
+  const handleGoogleLogin = async () => {
+
+    const { error } =
+      await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: "http://localhost:5173/",
+        },
+      });
+
+    if (error) {
+      console.log(error);
+      alert("Google login failed");
     }
   };
 
@@ -209,7 +288,10 @@ export default function Login() {
               </div>
 
               {/* GOOGLE */}
-              <button className="w-full py-4 rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.04] transition flex items-center justify-center gap-3 text-lg">
+              <button
+                onClick={handleGoogleLogin}
+                className="w-full py-4 rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.04] transition flex items-center justify-center gap-3 text-lg"
+              >
                 <FcGoogle size={22} />
                 Google
               </button>
