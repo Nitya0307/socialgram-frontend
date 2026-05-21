@@ -51,7 +51,7 @@ export default function Login() {
       );
 
       // REDIRECT
-      navigate("/create-post");
+      navigate("/home");
       
 
     } catch (error) {

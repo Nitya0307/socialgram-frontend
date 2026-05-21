@@ -6,6 +6,7 @@ import {
   Trash2,
   Pencil,
   LogOut,
+  Plus,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -132,13 +133,27 @@ export default function Home() {
             Home
           </h1>
 
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-white/[0.03] border border-white/10 hover:bg-white/[0.06] transition"
-          >
-            <LogOut size={18} />
-            Logout
-          </button>
+          <div className="flex items-center gap-4">
+
+            {/* CREATE POST BUTTON */}
+            <button
+              onClick={() => navigate("/create-post")}
+              className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-violet-500 to-indigo-500 hover:opacity-90 transition"
+            >
+              <Plus size={18} />
+              Create
+            </button>
+
+            {/* LOGOUT BUTTON */}
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-white/[0.03] border border-white/10 hover:bg-white/[0.06] transition"
+            >
+              <LogOut size={18} />
+              Logout
+            </button>
+
+          </div>
 
         </div>
 
