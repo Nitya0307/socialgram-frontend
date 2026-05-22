@@ -3,8 +3,8 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import axios from "axios";
 import { supabase } from "../supabase";
+import { signupUser } from "../services/authService";
 
 export default function Signup() {
 
@@ -30,10 +30,7 @@ export default function Signup() {
 
     try {
 
-      const response = await axios.post(
-        "http://localhost:5000/auth/signup",
-        formData
-      );
+      const response = await signupUser(formData);
 
       alert(response.data.message);
 

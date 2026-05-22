@@ -3,8 +3,9 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import axios from "axios";
+import { loginUser } from "../services/authService";
 import { supabase } from "../supabase";
+import axios from "axios";
 
 export default function Login() {
 
@@ -92,10 +93,7 @@ export default function Login() {
 
     try {
 
-      const response = await axios.post(
-        "http://localhost:5000/auth/login",
-        formData
-      );
+      const response = await loginUser(formData);
 
       alert(response.data.message);
 
