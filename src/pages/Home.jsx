@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import {
-  Heart,
-  MessageCircle,
-  Trash2,
-  Pencil,
   LogOut,
   Plus,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabase";
+import { useAuth } from "../context/AuthContext";
+import PostCard from "../components/PostCard";
+
 export default function Home() {
 
   const [posts, setPosts] = useState([]);
@@ -17,15 +16,7 @@ export default function Home() {
 
   const navigate = useNavigate();
 
-  // SAFE USER FETCH
-  const localUser = localStorage.getItem("user");
-
-  const user = localUser
-    ? JSON.parse(localUser)
-    : {
-        id: "google-user",
-        username: "Google User",
-      };
+  const { user, logout } = useAuth();
 
   // FETCH POSTS
   const fetchPosts = async () => {
@@ -73,7 +64,7 @@ export default function Home() {
       await axios.post(
         "http://localhost:5000/posts/like",
         {
-          user_id: user.id,
+          user_id: user?.id,
           post_id: postId,
         }
       );
@@ -98,7 +89,7 @@ export default function Home() {
       await axios.post(
         "http://localhost:5000/posts/comment",
         {
-          user_id: user.id,
+          user_id: user?.id,
           post_id: postId,
           comment: commentText[postId],
         }
@@ -121,17 +112,12 @@ export default function Home() {
   // LOGOUT
   const handleLogout = async () => {
 
-  // REMOVE LOCAL USER
-  localStorage.removeItem("user");
+    logout();
 
-  localStorage.removeItem("token");
+    await supabase.auth.signOut();
 
-  // SIGN OUT FROM SUPABASE
-  await supabase.auth.signOut();
-
-  // REDIRECT
-  navigate("/");
-};
+    navigate("/");
+  };
 
   return (
     <div className="min-h-screen bg-[#050816] text-white py-10 px-6">
@@ -173,109 +159,19 @@ export default function Home() {
 
           {posts.map((post) => (
 
-            <div
+            <PostCard
               key={post.id}
-              className="bg-white/[0.03] border border-white/10 rounded-3xl p-6"
-            >
+              post={post}
+              user={user}
+              commentText={commentText}
+              setCommentText={setCommentText}
+              likePost={likePost}
+              addComment={addComment}
+              deletePost={deletePost}
+            />
 
-              {/* USER */}
-              <div className="flex items-center justify-between mb-5">
-
-                <div className="flex items-center gap-3">
-
-                  <div className="w-12 h-12 rounded-xl bg-violet-500 flex items-center justify-center font-bold text-lg">
-                    {post.username?.charAt(0).toUpperCase()}
-                  </div>
-
-                  <div>
-                    <h3 className="font-semibold">
-                      {post.username}
-                    </h3>
-                  </div>
-                </div>
-
-                {/* OWNER ONLY */}
-                {user.id === post.user_id && (
-
-                  <div className="flex gap-4">
-
-                    <button>
-                      <Pencil size={18} />
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        deletePost(post.id)
-                      }
-                    >
-                      <Trash2 size={18} />
-                    </button>
-
-                  </div>
-                )}
-              </div>
-
-              {/* IMAGE */}
-              {post.media_url && (
-                <img
-                  src={post.media_url}
-                  alt=""
-                  className="w-full rounded-3xl mb-5"
-                />
-              )}
-
-              {/* CAPTION */}
-              <p className="text-zinc-300 mb-6">
-                {post.description}
-              </p>
-
-              {/* ACTIONS */}
-              <div className="flex items-center gap-6 text-zinc-400 mb-5">
-
-                {/* LIKE */}
-                <button
-                  onClick={() => likePost(post.id)}
-                  className="flex items-center gap-2 hover:text-white"
-                >
-                  <Heart size={20} />
-                  {post.likes_count || 0} Likes
-                </button>
-
-                {/* COMMENTS */}
-                <button className="flex items-center gap-2 hover:text-white">
-                  <MessageCircle size={20} />
-                  {post.comments_count || 0} Comments
-                </button>
-
-              </div>
-
-              {/* COMMENT INPUT */}
-              <div className="flex gap-3">
-
-                <input
-                  type="text"
-                  placeholder="Write a comment..."
-                  value={commentText[post.id] || ""}
-                  onChange={(e) =>
-                    setCommentText({
-                      ...commentText,
-                      [post.id]: e.target.value,
-                    })
-                  }
-                  className="flex-1 bg-white/[0.03] border border-white/10 rounded-2xl px-4 py-3 outline-none focus:border-violet-500"
-                />
-
-                <button
-                  onClick={() => addComment(post.id)}
-                  className="px-5 py-3 rounded-2xl bg-gradient-to-r from-violet-500 to-indigo-500 hover:opacity-90"
-                >
-                  Post
-                </button>
-
-              </div>
-
-            </div>
           ))}
+
         </div>
       </div>
     </div>

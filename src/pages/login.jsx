@@ -6,10 +6,14 @@ import { useState, useEffect } from "react";
 import { loginUser } from "../services/authService";
 import { supabase } from "../supabase";
 import axios from "axios";
+import { useAuth } from "../context/AuthContext";
+import Button from "../components/Button";
+import Input from "../components/Input";
 
 export default function Login() {
 
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const [showPw, setShowPw] = useState(false);
 
@@ -34,6 +38,7 @@ export default function Login() {
     try {
 
       // CHECK EXISTING USER
+      var loginResponse = ApiService.get(path: "/auth/google-user", params: ['email': ${googleUser.email}]);
       const response = await axios.get(
         `http://localhost:5000/auth/google-user?email=${googleUser.email}`
       );
@@ -99,17 +104,10 @@ export default function Login() {
 
       console.log(response.data);
 
-      // SAVE TOKEN
-      localStorage.setItem(
-        "token",
-        response.data.token
-      );
-
-      // SAVE USER
-      localStorage.setItem(
-        "user",
-        JSON.stringify(response.data.user)
-      );
+      login(
+      response.data.user,
+      response.data.token
+       );
 
       // REDIRECT
       navigate("/home");
@@ -233,7 +231,7 @@ export default function Login() {
 
               {/* EMAIL / USERNAME / PHONE */}
               <div className="mb-5">
-                <input
+                <Input
                   type="text"
                   name="identifier"
                   onChange={handleChange}
@@ -269,12 +267,14 @@ export default function Login() {
               </div>
 
               {/* BUTTON */}
-              <button
-                onClick={handleLogin}
-                className="w-full py-4 rounded-2xl font-semibold text-lg bg-gradient-to-r from-violet-500 to-indigo-500 hover:opacity-90 transition shadow-lg shadow-violet-500/20"
-              >
-                Sign in
-              </button>
+              <Button
+            onClick={handleLogin}
+           className="w-full py-4 rounded-2xl font-semibold text-lg bg-gradient-to-r from-violet-500 to-indigo-500 hover:opacity-90 transition shadow-lg shadow-violet-500/20"
+>
+          Sign in
+           </Button>
+
+
 
               {/* DIVIDER */}
               <div className="flex items-center gap-4 my-8">

@@ -4,6 +4,7 @@ import Login from "../pages/login";
 import Signup from "../pages/signup";
 import Createpost from "../pages/Createpost";
 import Home from "../pages/Home";
+import ProtectedRoute from "./ProtectedRoute";
 
 export default function AppRoutes() {
   return (
@@ -14,10 +15,24 @@ export default function AppRoutes() {
 
         <Route path="/signup" element={<Signup />} />
 
-        <Route path="/create-post" element={<Createpost />} />
+        <Route
+  path="/create-post"
+  element={
+    <ProtectedRoute>
+      <Createpost />
+    </ProtectedRoute>
+  }
+/>
 
-        <Route path="/home" element={<Home />} />
 
+<Route
+  path="/home"
+  element={
+    <ProtectedRoute>
+      <Home />
+    </ProtectedRoute>
+  }
+/>
       </Routes>
     </BrowserRouter>
   );
