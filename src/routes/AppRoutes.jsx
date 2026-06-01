@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+import LandingPage from "../pages/LandingPage";
 import Login from "../pages/login";
 import Signup from "../pages/signup";
 import Createpost from "../pages/Createpost";
@@ -11,7 +12,15 @@ export default function AppRoutes() {
     <BrowserRouter>
       <Routes>
 
-        <Route path="/" element={<Login />} />
+        <Route
+  path="/"
+  element={<LandingPage />}
+/>
+
+<Route
+  path="/login"
+  element={<Login />}
+/>
 
         <Route path="/signup" element={<Signup />} />
 
