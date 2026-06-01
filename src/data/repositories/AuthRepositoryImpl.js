@@ -1,5 +1,7 @@
 import AuthRepository
   from "../../domain/repositories/AuthRepository";
+import { supabase }
+  from "../../supabase";
 
 import {
   loginApi,
@@ -31,6 +33,29 @@ export default class AuthRepositoryImpl
 
     return true;
   }
+
+  async loginWithGoogle() {
+
+  const { data, error } =
+    await supabase.auth
+      .signInWithOAuth({
+
+        provider: "google",
+
+        options: {
+
+          redirectTo:
+            window.location.origin,
+        },
+      });
+
+  if (error) {
+
+    throw error;
+  }
+
+  return data;
+}
 
   async getGoogleUser(email) {
 

@@ -17,6 +17,13 @@ export default class AuthRepository {
       "logout() not implemented"
     );
   }
+
+  async loginWithGoogle() {
+
+  throw new Error(
+    "loginWithGoogle() not implemented"
+  );
+}
   async getGoogleUser(email) {
 
   throw new Error(

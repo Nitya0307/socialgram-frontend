@@ -8,6 +8,13 @@ import {
   signupUserUseCase,
 } from "../di/container";
 
+import { supabase }
+  from "../supabase";
+
+import {
+  APP_CONFIG,
+} from "../core/config/apiConfig";
+
 export default function useSignup() {
 
   const navigate = useNavigate();
@@ -52,7 +59,7 @@ export default function useSignup() {
 
         alert(response.message);
 
-        navigate("/");
+        navigate("/login");
 
       } catch (err) {
 
@@ -71,6 +78,45 @@ export default function useSignup() {
       }
     };
 
+  // GOOGLE SIGNUP
+  const handleGoogleSignup =
+    async () => {
+
+      try {
+
+        setError("");
+
+        const { error } =
+
+          await supabase.auth
+            .signInWithOAuth({
+
+              provider:
+                "google",
+
+              options: {
+
+                redirectTo:
+                  APP_CONFIG
+                    .FRONTEND_URL,
+              },
+            });
+
+        if (error) {
+
+          throw error;
+        }
+
+      } catch (err) {
+
+        console.log(err);
+
+        setError(
+          "Google signup failed"
+        );
+      }
+    };
+
   return {
 
     formData,
@@ -79,9 +125,10 @@ export default function useSignup() {
 
     handleSignup,
 
+    handleGoogleSignup,
+
     loading,
 
     error,
   };
 }
-
