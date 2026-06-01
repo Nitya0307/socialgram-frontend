@@ -1,33 +1,87 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
-const AuthContext = createContext();
+const AuthContext =
+  createContext();
 
-export function AuthProvider({ children }) {
+export function AuthProvider({
+  children,
+}) {
 
-  const [user, setUser] = useState(null);
+  const [isLoading,
+    setIsLoading] =
+    useState(true);
 
-  const [token, setToken] = useState(null);
+  const [user,
+    setUser] =
+    useState(null);
+
+  const [token,
+    setToken] =
+    useState(null);
 
   useEffect(() => {
 
-    const storedUser = localStorage.getItem("user");
+    console.log("AUTH START");
 
-    const storedToken = localStorage.getItem("token");
+    const storedUser =
+      localStorage.getItem(
+        "user"
+      );
 
-    if (storedUser && storedToken) {
+    const storedToken =
+      localStorage.getItem(
+        "token"
+      );
 
-      setUser(JSON.parse(storedUser));
+    console.log(
+      "storedUser:",
+      storedUser
+    );
 
-      setToken(storedToken);
+    console.log(
+      "storedToken:",
+      storedToken
+    );
+
+    if (
+      storedUser &&
+      storedToken
+    ) {
+
+      console.log(
+        "RESTORING USER"
+      );
+
+      setUser(
+        JSON.parse(
+          storedUser
+        )
+      );
+
+      setToken(
+        storedToken
+      );
     }
+
+    setIsLoading(false);
 
   }, []);
 
-  const login = (userData, userToken) => {
+  const login = (
+    userData,
+    userToken
+  ) => {
 
     localStorage.setItem(
       "user",
-      JSON.stringify(userData)
+      JSON.stringify(
+        userData
+      )
     );
 
     localStorage.setItem(
@@ -35,16 +89,24 @@ export function AuthProvider({ children }) {
       userToken
     );
 
-    setUser(userData);
+    setUser(
+      userData
+    );
 
-    setToken(userToken);
+    setToken(
+      userToken
+    );
   };
 
   const logout = () => {
 
-    localStorage.removeItem("user");
+    localStorage.removeItem(
+      "user"
+    );
 
-    localStorage.removeItem("token");
+    localStorage.removeItem(
+      "token"
+    );
 
     setUser(null);
 
@@ -52,19 +114,31 @@ export function AuthProvider({ children }) {
   };
 
   return (
+
     <AuthContext.Provider
       value={{
+
         user,
+
         token,
+
+        isLoading,
+
         login,
+
         logout,
       }}
     >
+
       {children}
+
     </AuthContext.Provider>
   );
 }
 
 export function useAuth() {
-  return useContext(AuthContext);
+
+  return useContext(
+    AuthContext
+  );
 }

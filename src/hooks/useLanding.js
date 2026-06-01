@@ -15,30 +15,46 @@ export default function useLanding() {
   const navigate =
     useNavigate();
 
-  const { user } =
-    useAuth();
+  const {
+    user,
+    isLoading,
+  } = useAuth();
 
   useEffect(() => {
+
+    if (isLoading) {
+      return;
+    }
 
     const timer =
       setTimeout(() => {
 
         if (user) {
 
-          navigate("/home");
+          navigate(
+            "/home"
+          );
 
         } else {
 
-          navigate("/login");
+          navigate(
+            "/login"
+          );
         }
 
       }, 5000);
 
     return () =>
-      clearTimeout(timer);
+      clearTimeout(
+        timer
+      );
 
   }, [
+
     user,
+
+    isLoading,
+
     navigate,
   ]);
 }
