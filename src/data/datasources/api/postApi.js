@@ -11,34 +11,78 @@ export const fetchPostsApi =
 export const createPostApi =
   async (data) => {
 
+    const token =
+      localStorage.getItem(
+        "token"
+      );
+
     return await axiosClient.post(
       "/posts/create",
-      data
+      data,
+      {
+        headers: {
+          Authorization:
+            `Bearer ${token}`,
+        },
+      }
     );
 };
 
 export const likePostApi =
   async (data) => {
 
+    const token =
+      localStorage.getItem(
+        "token"
+      );
+
     return await axiosClient.post(
       "/posts/like",
-      data
+      data,
+      {
+        headers: {
+          Authorization:
+            `Bearer ${token}`,
+        },
+      }
     );
 };
 
 export const addCommentApi =
   async (data) => {
 
+    const token =
+      localStorage.getItem(
+        "token"
+      );
+
     return await axiosClient.post(
       "/posts/comment",
-      data
+      data,
+      {
+        headers: {
+          Authorization:
+            `Bearer ${token}`,
+        },
+      }
     );
 };
 
 export const deletePostApi =
   async (id) => {
 
+    const token =
+      localStorage.getItem(
+        "token"
+      );
+
     return await axiosClient.delete(
-      `/posts/${id}`
+      `/posts/${id}`,
+      {
+        headers: {
+          Authorization:
+            `Bearer ${token}`,
+        },
+      }
     );
 };

@@ -12,17 +12,13 @@ import {
 import { supabase }
   from "../supabase";
 
-import { useAuth }
-  from "../context/AuthContext";
 
 export default function useCreatePost() {
 
   const navigate =
     useNavigate();
 
-  // LOGGED IN USER
-  const { user } =
-    useAuth();
+
 
   // CAPTION STATE
   const [caption, setCaption] =
@@ -163,8 +159,6 @@ export default function useCreatePost() {
 
             .execute({
 
-              user_id:
-                user.id,
 
               description:
                 caption,
