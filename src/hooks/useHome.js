@@ -116,23 +116,31 @@ export default function useHome() {
     };
 
   // LOGOUT
-  const handleLogout =
-    async () => {
+const handleLogout =
+  async () => {
 
-      try {
+    try {
 
-        logout();
+      // GO TO LANDING FIRST
+      navigate(
+        "/",
+        {
+          replace: true,
+        }
+      );
 
-        await supabase.auth
-          .signOut();
+      // THEN CLEAR AUTH
+      await supabase.auth
+        .signOut();
 
-        navigate("/");
+      logout();
 
-      } catch (err) {
+    } catch (err) {
 
-        console.log(err);
-      }
-    };
+      console.log(err);
+    }
+  };
+
 
   useEffect(() => {
 

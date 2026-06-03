@@ -9,8 +9,10 @@ export default class CreatePost {
   async execute(data) {
 
     if (
-      !data.caption &&
-      !data.images?.length
+
+      !data.description?.trim() &&
+      !data.media_url
+     
     ) {
 
       throw new Error(

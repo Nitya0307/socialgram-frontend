@@ -5,6 +5,13 @@ import {
   useState,
 } from "react";
 
+import { supabase }
+  from "../supabase";
+
+import {
+  googleLoginUserUseCase,
+} from "../di/container";
+
 const AuthContext =
   createContext();
 
@@ -26,49 +33,128 @@ export function AuthProvider({
 
   useEffect(() => {
 
-    console.log("AUTH START");
+    const restoreSession =
+      async () => {
 
-    const storedUser =
-      localStorage.getItem(
-        "user"
-      );
+        try {
 
-    const storedToken =
-      localStorage.getItem(
-        "token"
-      );
+          console.log(
+            "AUTH START"
+          );
 
-    console.log(
-      "storedUser:",
-      storedUser
-    );
+          const storedUser =
+            localStorage.getItem(
+              "user"
+            );
 
-    console.log(
-      "storedToken:",
-      storedToken
-    );
+          const storedToken =
+            localStorage.getItem(
+              "token"
+            );
 
-    if (
-      storedUser &&
-      storedToken
-    ) {
+          console.log(
+            "storedUser:",
+            storedUser
+          );
 
-      console.log(
-        "RESTORING USER"
-      );
+          console.log(
+            "storedToken:",
+            storedToken
+          );
 
-      setUser(
-        JSON.parse(
-          storedUser
-        )
-      );
+          // NORMAL LOGIN SESSION
+          if (
+            storedUser &&
+            storedToken
+          ) {
 
-      setToken(
-        storedToken
-      );
-    }
+            console.log(
+              "RESTORING USER"
+            );
 
-    setIsLoading(false);
+            setUser(
+              JSON.parse(
+                storedUser
+              )
+            );
+
+            setToken(
+              storedToken
+            );
+
+            setIsLoading(
+              false
+            );
+
+            return;
+          }
+
+          // GOOGLE SESSION
+          const {
+
+            data: {
+              user:
+                googleUser,
+            },
+
+          } =
+
+            await supabase
+              .auth
+              .getUser();
+
+          if (
+            googleUser
+          ) {
+
+            console.log(
+              "RESTORING GOOGLE USER"
+            );
+
+            const existingUser =
+
+              await googleLoginUserUseCase
+                .execute(
+                  googleUser
+                );
+
+            localStorage.setItem(
+              "user",
+
+              JSON.stringify(
+                existingUser
+              )
+            );
+
+            localStorage.setItem(
+              "token",
+              "google-auth"
+            );
+
+            setUser(
+              existingUser
+            );
+
+            setToken(
+              "google-auth"
+            );
+          }
+
+        } catch (err) {
+
+          console.log(
+            err
+          );
+
+        } finally {
+
+          setIsLoading(
+            false
+          );
+        }
+      };
+
+    restoreSession();
 
   }, []);
 
@@ -79,6 +165,7 @@ export function AuthProvider({
 
     localStorage.setItem(
       "user",
+
       JSON.stringify(
         userData
       )
@@ -107,6 +194,9 @@ export function AuthProvider({
     localStorage.removeItem(
       "token"
     );
+
+    // GOOGLE LOGOUT
+    supabase.auth.signOut();
 
     setUser(null);
 

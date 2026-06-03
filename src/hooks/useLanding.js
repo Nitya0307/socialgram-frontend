@@ -29,6 +29,8 @@ export default function useLanding() {
     const timer =
       setTimeout(() => {
 
+        console.log("LANDING USER:", user);
+
         if (user) {
 
           navigate(

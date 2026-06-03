@@ -2,6 +2,10 @@ import { useState }
   from "react";
 
 import {
+  useNavigate,
+} from "react-router-dom";
+
+import {
   createPostUseCase,
 } from "../di/container";
 
@@ -12,6 +16,9 @@ import { useAuth }
   from "../context/AuthContext";
 
 export default function useCreatePost() {
+
+  const navigate =
+    useNavigate();
 
   // LOGGED IN USER
   const { user } =
@@ -84,7 +91,6 @@ export default function useCreatePost() {
           const file =
             previews[0];
 
-          // UNIQUE FILE NAME
           const fileName =
             `${Date.now()}-${file.name}`;
 
@@ -92,7 +98,6 @@ export default function useCreatePost() {
             "3 BEFORE UPLOAD"
           );
 
-          // UPLOAD TO SUPABASE
           const {
             error: uploadError,
           } =
@@ -109,7 +114,6 @@ export default function useCreatePost() {
             "4 AFTER UPLOAD"
           );
 
-          // STOP IF UPLOAD FAILS
           if (uploadError) {
 
             console.log(
@@ -120,7 +124,6 @@ export default function useCreatePost() {
             throw uploadError;
           }
 
-          // GET PUBLIC URL
           const {
             data,
           } =
@@ -142,23 +145,38 @@ export default function useCreatePost() {
         }
 
         console.log(
+          "CAPTION:",
+          caption
+        );
+
+        console.log(
+          "MEDIA URL:",
+          mediaUrl
+        );
+
+        console.log(
           "6 BEFORE USECASE"
         );
 
-        // CREATE POST
-        await createPostUseCase
+        const response =
+          await createPostUseCase
 
-          .execute({
+            .execute({
 
-            user_id:
-              user.id,
+              user_id:
+                user.id,
 
-            description:
-              caption,
+              description:
+                caption,
 
-            media_url:
-              mediaUrl,
-          });
+              media_url:
+                mediaUrl,
+            });
+
+        console.log(
+          "POST RESPONSE:",
+          response
+        );
 
         console.log(
           "7 AFTER USECASE"
@@ -168,6 +186,9 @@ export default function useCreatePost() {
         setCaption("");
 
         setPreviews([]);
+
+        // GO TO HOME PAGE
+        navigate("/home");
 
       } catch (err) {
 

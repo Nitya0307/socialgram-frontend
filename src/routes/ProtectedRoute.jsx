@@ -28,7 +28,10 @@ export default function ProtectedRoute({
   if (!user) {
 
     return (
-      <Navigate to="/login" />
+      <Navigate
+  to="/"
+  replace
+/>
     );
   }
 
